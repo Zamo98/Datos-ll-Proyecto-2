@@ -1,2 +1,2 @@
 # Image Recovery y Rent a Car - Proyecto 2 Datos ll
-Estudiantes: Irene Garnoza, Olman Rodríguez, Yaritza López y Gustavo Zamora.
+Estudiantes: Irene Garnoza, Yaritza López, Olman Rodríguez y Gustavo Zamora.
