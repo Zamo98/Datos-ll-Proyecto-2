@@ -7,7 +7,9 @@
 
 #include "algoritmoGenetico.h"
 #include "cargarImagen.h"
-
+#include <QXmlStreamWriter>
+#include <QTextStream>
+#include <QtCore/qfile.h>
 
 int cantidadPoblacion;
 int probabilidadMutacion = 2;
@@ -67,6 +69,15 @@ Mat algoritmoGenetico::colorPixel(Mat image) {
             image.at<Vec3b>(i,j)[0] = genes[Indice][i][j][0];
             image.at<Vec3b>(i,j)[1] = genes[Indice][i][j][1];
             image.at<Vec3b>(i,j)[2] = genes[Indice][i][j][2];
+
+            QFile xml("InformaciónGeneraciones.xml");
+            xml.open(QIODevice::WriteOnly);
+            QXmlStreamWriter escritorXml(&xml);
+            escritorXml.writeStartDocument();
+            escritorXml.writeEndDocument();
+            escritorXml.writeStartElement("Individuos");
+            xml.close();
+            QFile salida("InformaciónGeneraciones.xml");
         }
     }
     return image;
@@ -102,11 +113,15 @@ void cruce(int pos, algoritmoGenetico padre, algoritmoGenetico madre) {
                         nuevosGenes[pos][i][j][k] = objetivo[i][j][k];
                     }
                     else{
-                        goto branch;
+                        if(rand() % 2 == 0){
+                            nuevosGenes[pos][i][j][k] = genes[padre.Indice][i][j][k];
+                        }
+                        else{
+                            nuevosGenes[pos][i][j][k] = genes[madre.Indice][i][j][k];
+                        }
                     }
                 }
                 else{
-                    branch:
                     if(rand() % 2 == 0){
                         nuevosGenes[pos][i][j][k] = genes[padre.Indice][i][j][k];
                     }
@@ -137,23 +152,23 @@ void algoritmoGenetico::principal() {
     cargarImagen i;
     Mat img = obj->borrarImagen();
     obj->cargar();
-    Mat imagenBase;
-    imagenBase = obj->imagenObjetivo;
-    filas = imagenBase.rows;
-    columnas = imagenBase.cols;
+    Mat imagenRefencia;
+    imagenRefencia = obj->imagenObjetivo;
+    filas = imagenRefencia.rows;
+    columnas = imagenRefencia.cols;
     objetivo = new Vec3b * [filas];
     for(int i = 0; i < filas; i++){
         objetivo[i] = new Vec3b[columnas];
     }
     for(int i = 0; i < filas; i++){
         for(int j = 0; j < columnas;j++){
-            objetivo[i][j][0] = imagenBase.at<Vec3b>(i,j)[0];
-            objetivo[i][j][1] = imagenBase.at<Vec3b>(i,j)[1];
-            objetivo[i][j][2] = imagenBase.at<Vec3b>(i,j)[2];
+            objetivo[i][j][0] = imagenRefencia.at<Vec3b>(i,j)[0]; //se da el color de la imagen referencia
+            objetivo[i][j][1] = imagenRefencia.at<Vec3b>(i,j)[1];
+            objetivo[i][j][2] = imagenRefencia.at<Vec3b>(i,j)[2];
         }
     }
     cantidadPoblacion = 130;
-    matriz = new int[cantidadPoblacion * (cantidadPoblacion+1)/2];
+    matriz = new int[cantidadPoblacion * (cantidadPoblacion+1)/2]; // se definen los vectores
     genes = new Vec3b * *[cantidadPoblacion + 10];
     nuevosGenes = new Vec3b * *[cantidadPoblacion + 10];
     for(int i = 0; i < cantidadPoblacion+10; i++){
@@ -165,9 +180,9 @@ void algoritmoGenetico::principal() {
         }
     }
     poblacion = new algoritmoGenetico[cantidadPoblacion];
-    for(int i = 0; i < cantidadPoblacion; i++){
-        poblacion[i].inicializar(filas, columnas);
-        poblacion[i].funcionFitness();
+    for(int i = 0; i < cantidadPoblacion; i++){  //se genera la población, se inicializa el arreglo
+        poblacion[i].inicializar(filas, columnas);//y se llama a la función fitness para que valore
+        poblacion[i].funcionFitness();//cada individuo
     }
     int generaciones = 0;
     while(true) {
@@ -175,7 +190,7 @@ void algoritmoGenetico::principal() {
         for (int i = 0; i < cantidadPoblacion; i++) {
             poblacion[i].funcionFitness();
         }
-        sort(poblacion, poblacion + cantidadPoblacion, aptitud);
+        sort(poblacion, poblacion + cantidadPoblacion, aptitud); //ordena los individuossegún la aptitud
         cout << "Fitness: " << poblacion[0].fitness << "  |  " << "Generación: " << generaciones << endl;
         if (poblacion[0].fitness > 1000) {
             break;
