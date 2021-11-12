@@ -176,10 +176,8 @@ void algoritmoGenetico::principal() {
             poblacion[i].funcionFitness();
         }
         sort(poblacion, poblacion + cantidadPoblacion, aptitud);
-        cout << poblacion[0].fitness << endl;
-        cout << "Generación: " << generaciones << endl;
-        if (poblacion[0].fitness > 3000) {
-            //cout << generaciones << endl;
+        cout << "Fitness: " << poblacion[0].fitness << "  |  " << "Generación: " << generaciones << endl;
+        if (poblacion[0].fitness > 1000) {
             break;
         }
 

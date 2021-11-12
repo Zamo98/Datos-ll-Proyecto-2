@@ -17,22 +17,22 @@ using namespace cv;
  */
 cargarImagen ::cargarImagen() {}
 
+/**
+ * @brief borrarImagen se encarga de borrar una parte de la imagen
+ * @return
+ */
 Mat cargarImagen::borrarImagen() {
 
     for (int i = 0; i < image.rows; i++) {
-        //Vec3b *imgrow = image.ptr<Vec3b>(i);
+        Vec3b *imgrow = image.ptr<Vec3b>(i);
 
         for (int j = 0; j < image.cols; j++) {
 
-            image.at<Vec3b>(i,j)[0] = 255;
-            image.at<Vec3b>(i,j)[1] = 255;
-            image.at<Vec3b>(i,j)[2] = 255;
-
-            /*uchar white = 255;
+            uchar white = 255;
 
             imgrow[j][0] = white;
             imgrow[j][1] = white;
-            imgrow[j][2] = white;*/
+            imgrow[j][2] = white;
 
         }
     }
